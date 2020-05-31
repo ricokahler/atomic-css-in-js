@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../",
+    "paths": {
+      "@atomic-css-in-js/common": ["common/src/index.ts"]
+    }
+  }
+}
