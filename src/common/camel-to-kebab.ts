@@ -2,7 +2,7 @@
  * A simple camel to kebab function
  */
 function camelToKebab(camel: string) {
-  const normalized = camel.replace(/[^a-z0-9.]*/gi, '');
+  const normalized = camel.replace(/[^a-z0-9]*/gi, '');
 
   const [firstCharacter, ...rest] = normalized.split('');
 
