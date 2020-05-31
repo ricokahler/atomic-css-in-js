@@ -72,7 +72,7 @@ export interface AtomicRule {
 
 export interface CompilationResult {
   atomicRules: AtomicRule[];
-  otherRules: string[];
+  globalRules: string[];
 }
 
 /**
@@ -184,8 +184,9 @@ function compile(stylisCss: string): CompilationResult {
           return;
         }
 
-        otherRules.push(serialize([node], stringify));
-        return;
+        throw new Error(
+          `The rule "${value}" must be wrapped in @supports (--atomic-css-in-js: global)`
+        );
       }
     }
   }
@@ -220,7 +221,7 @@ function compile(stylisCss: string): CompilationResult {
 
   return {
     atomicRules: uniqueAtomicRules,
-    otherRules,
+    globalRules: otherRules,
   };
 }
 

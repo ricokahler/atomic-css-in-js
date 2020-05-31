@@ -1,7 +1,7 @@
 import { compile, getClassName } from '../common';
 import {
   appliedAtomicCssRules,
-  appliedOtherRules,
+  appliedGlobalRules,
   classNameCache,
 } from './caches';
 
@@ -27,7 +27,7 @@ function css(strings: TemplateStringsArray, ...values: Array<string | number>) {
   if (classNameCache[combined]) return classNameCache[combined];
 
   const compilationResult = compile(combined);
-  const { atomicRules, otherRules } = compilationResult;
+  const { atomicRules, globalRules } = compilationResult;
 
   const styleEl = getStyleEl();
 
@@ -36,16 +36,16 @@ function css(strings: TemplateStringsArray, ...values: Array<string | number>) {
       .map(({ atomicCss }) => atomicCss)
       .filter((atomicCss) => !appliedAtomicCssRules[atomicCss])
       .join('\n') + '\n';
-  const otherRulesToApply =
-    otherRules.filter((rule) => !appliedOtherRules[rule]).join('\n') + '\n';
+  const globalRulesToApply =
+    globalRules.filter((rule) => !appliedGlobalRules[rule]).join('\n') + '\n';
 
-  styleEl.innerHTML += atomicRulesToApply + otherRulesToApply;
+  styleEl.innerHTML += atomicRulesToApply + globalRulesToApply;
 
   for (const { atomicCss } of atomicRules) {
     appliedAtomicCssRules[atomicCss] = true;
   }
-  for (const otherRule of otherRules) {
-    appliedOtherRules[otherRule] = true;
+  for (const otherRule of globalRules) {
+    appliedGlobalRules[otherRule] = true;
   }
 
   const className = getClassName(compilationResult);

@@ -1,13 +1,13 @@
 import css from './css';
-import { appliedAtomicCssRules, appliedOtherRules } from './caches';
+import { appliedAtomicCssRules, appliedGlobalRules } from './caches';
 
 beforeEach(() => {
   for (const key of Object.keys(appliedAtomicCssRules)) {
     delete appliedAtomicCssRules[key];
   }
 
-  for (const key of Object.keys(appliedOtherRules)) {
-    delete appliedOtherRules[key];
+  for (const key of Object.keys(appliedGlobalRules)) {
+    delete appliedGlobalRules[key];
   }
 });
 

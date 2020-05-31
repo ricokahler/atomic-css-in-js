@@ -31,7 +31,7 @@ it('takes in a stylis CSS string and outputs atomic CSS', () => {
           "className": "acj_z66snb_yisw1n",
         },
       ],
-      "otherRules": Array [],
+      "globalRules": Array [],
     }
   `);
 });
@@ -66,7 +66,7 @@ test('nested rules', () => {
           "className": "acj_1hxrs9k_yisw1n",
         },
       ],
-      "otherRules": Array [],
+      "globalRules": Array [],
     }
   `);
 });
@@ -101,7 +101,7 @@ test('nested media queries and @supports', () => {
           "className": "acj_tt93ot_1201c14",
         },
       ],
-      "otherRules": Array [],
+      "globalRules": Array [],
     }
   `);
 });
@@ -141,57 +141,7 @@ it('removes duplicate rules', () => {
           "className": "acj_3yu9gv_yisw1n",
         },
       ],
-      "otherRules": Array [],
-    }
-  `);
-});
-
-test('@keyframes', () => {
-  const result = compile(css`
-    color: red;
-
-    @keyframes mymove {
-      from {
-        top: 0px;
-      }
-      to {
-        top: 200px;
-      }
-    }
-
-    .nested {
-      @keyframes mymove {
-        0% {
-          top: 0px;
-        }
-        25% {
-          top: 200px;
-        }
-        50% {
-          top: 100px;
-        }
-        75% {
-          top: 200px;
-        }
-        100% {
-          top: 0px;
-        }
-      }
-    }
-  `);
-
-  expect(result).toMatchInlineSnapshot(`
-    Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_z66snb_375bw6{color:red}",
-          "className": "acj_z66snb_375bw6",
-        },
-      ],
-      "otherRules": Array [
-        "@keyframes mymove{from{top:0px;}to{top:200px;}}",
-        "@keyframes mymove{0%{top:0px;}25%{top:200px;}50%{top:100px;}75%{top:200px;}100%{top:0px;}}",
-      ],
+      "globalRules": Array [],
     }
   `);
 });
@@ -227,12 +177,64 @@ it('allows for global css with the `@supports (--atomic-css-in-js: global)` rule
   expect(result).toMatchInlineSnapshot(`
     Object {
       "atomicRules": Array [],
-      "otherRules": Array [
+      "globalRules": Array [
         ".red{color:red;background-color:red;}",
         ".black{color:black;}",
         ".bold{font-weight:bold;}",
         ".bold .nested{background-color:purple;}",
         "@media (max-width: 425px){ .test{font-weight:900;}}",
+      ],
+    }
+  `);
+});
+
+test('@keyframes with @supports (--atomic-css-in-js: global)', () => {
+  const result = compile(css`
+    color: red;
+
+    @supports (--atomic-css-in-js: global) {
+      @keyframes mymove {
+        from {
+          top: 0px;
+        }
+        to {
+          top: 200px;
+        }
+      }
+
+      .nested {
+        @keyframes mymove {
+          0% {
+            top: 0px;
+          }
+          25% {
+            top: 200px;
+          }
+          50% {
+            top: 100px;
+          }
+          75% {
+            top: 200px;
+          }
+          100% {
+            top: 0px;
+          }
+        }
+      }
+    }
+  `);
+
+  expect(result).toMatchInlineSnapshot(`
+    Object {
+      "atomicRules": Array [
+        Object {
+          "atomicCss": ".acj_z66snb_375bw6{color:red}",
+          "className": "acj_z66snb_375bw6",
+        },
+      ],
+      "globalRules": Array [
+        "@keyframes mymove{from{top:0px;}to{top:200px;}}",
+        "@keyframes mymove{0%{top:0px;}25%{top:200px;}50%{top:100px;}75%{top:200px;}100%{top:0px;}}",
       ],
     }
   `);
