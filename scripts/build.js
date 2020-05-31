@@ -28,7 +28,7 @@ async function build() {
   await execute('npm i');
 
   console.log('linting…');
-  await execute('npx eslint src --ext .ts,.tsx,.js');
+  await execute('npm run lint');
 
   console.log('generating types…');
   await execute('npx tsc');

@@ -9,32 +9,35 @@
 - [ ] standalone mode
 - [ ] compiler mode (static CSS extraction)
 - [ ] loader (reduce code splitting reduction)
-- [ ] fallback support (implement with comment, make it change the property hash)
-- [ ] global CSS support (with `:global { /* ... */ }`?)
-- [ ] @keyframes @supports (does this work?)
+- [x] fallback support (implement with comment, make it change the property hash)
+- [x] global CSS support (with `:global { /* ... */ }`?)
+- [x] @keyframes @supports (does this work?)
 - [ ] stylelint
-- [ ] grid-template-areas
+- [x] grid-template-areas
+- [ ] snippet to generate `vars` and class name anchors `a`
 
 ```js
 import React from 'react';
 import { css, resolve, createStyles, createVariables } from 'atomic-css-in-js';
 
-const { vars } = createVariables('test');
+const vars = createVariables('namespace', ['test']);
+const classes = createClassNames('namespace', ['test']);
 
 export const styles = createStyles({
   main: css``,
-  get title() {
-    return css`
-      & ${this.main}:hover {
-        background-color: ${vars.test};
-      }
-    `;
-  },
+  title: css`
+    & ${classes.test}:hover {
+      background-color: ${vars.test};
+    }
+  `,
 });
 
 function Component({ title }) {
   return (
-    <div className={main} style={vars({ test: rest })}>
+    <div
+      className={resolve(classes.test, main, props.active && classes.someLon)}
+      style={vars({ test: rest })}
+    >
       <h1 className={resolve(styles.main, styles.title)}>{title}</h1>
       <p>Description</p>
     </div>
