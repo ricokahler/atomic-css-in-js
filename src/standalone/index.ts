@@ -2,6 +2,7 @@ export { default as css } from './css';
 export {
   camelToKebab,
   compile,
+  createClassNames,
   createVariables,
   getClassName,
   resolve,
