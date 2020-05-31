@@ -1,4 +1,4 @@
-import { compile, getClassName } from '@atomic-css-in-js/common';
+import { compile, getClassName } from '../common';
 import {
   appliedAtomicCssRules,
   appliedOtherRules,

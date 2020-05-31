@@ -78,7 +78,9 @@ test('nested media queries and @supports', () => {
       grid-template-columns: repeat(2, 1fr);
 
       @media (max-width: 425px) {
-        grid-template-columns: 1fr;
+        .test {
+          grid-template-columns: 1fr;
+        }
       }
     }
   `);

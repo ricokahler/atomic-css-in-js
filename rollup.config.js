@@ -9,14 +9,6 @@ import path from 'path';
 const extensions = ['.js', '.ts', '.tsx'];
 
 const umdPlugins = [
-  alias({
-    entries: [
-      {
-        find: '@atomic-css-in-js/common',
-        replacement: path.resolve(__dirname, './packages/common/src/index.ts'),
-      },
-    ],
-  }),
   resolve({
     extensions,
   }),
@@ -51,11 +43,11 @@ const esmPlugins = [
 ];
 
 export default [
-  // STANDALONE
+  // standalone
   {
-    input: './packages/standalone/src/index.ts',
+    input: './src/index.ts',
     output: {
-      file: './dist/standalone/index.js',
+      file: './dist/index.js',
       format: 'umd',
       sourcemap: true,
       name: 'atomicCssInJs',
@@ -65,9 +57,9 @@ export default [
     external: ['stylis'],
   },
   {
-    input: './packages/standalone/src/index.ts',
+    input: './src/index.ts',
     output: {
-      file: './dist/standalone/index.esm.js',
+      file: './dist/index.esm.js',
       format: 'esm',
       sourcemap: true,
     },
