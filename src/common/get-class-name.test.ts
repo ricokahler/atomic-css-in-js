@@ -32,6 +32,6 @@ it('takes in a compilation result and returns the className string', () => {
 
   const className = getClassName(compilationResult);
   expect(className).toMatchInlineSnapshot(
-    `"acj_1a1043w_yirzs0 acj_1jtoon2_yjcvn2 acj_1p6hqho_1jxplcz acj_3yu9gv_375bw6"`
+    `"acj_131kqy5_375bw6 acj_16s31se_yirzs0 acj_1kwaa8u_1jxplcz acj_6k2v98_yjcvn2"`
   );
 });

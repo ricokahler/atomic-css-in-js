@@ -1,4 +1,6 @@
 import compile from './compile';
+import getClassName from './get-class-name';
+import resolve from './resolve';
 
 // simple string re-export tag for syntax highlighting in VS-code
 function css(strings: TemplateStringsArray, ...values: Array<string | number>) {
@@ -23,12 +25,12 @@ it('takes in a stylis CSS string and outputs atomic CSS', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": ".acj_1t4oquc_32wtia{background-color:black}",
-          "className": "acj_1t4oquc_32wtia",
+          "atomicCss": ".acj_1m4qrlx_yisw1n{color:blue}",
+          "className": "acj_1m4qrlx_yisw1n",
         },
         Object {
-          "atomicCss": ".acj_z66snb_yisw1n{color:blue}",
-          "className": "acj_z66snb_yisw1n",
+          "atomicCss": ".acj_1ux9gpy_32wtia{background-color:black}",
+          "className": "acj_1ux9gpy_32wtia",
         },
       ],
       "globalRules": Array [],
@@ -54,16 +56,16 @@ test('nested rules', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": ".acj_1ao1yqo_375bw6 .foo.a{color:red}",
-          "className": "acj_1ao1yqo_375bw6",
+          "atomicCss": ".acj_1trhafu_yisw1n.bar{color:blue}",
+          "className": "acj_1trhafu_yisw1n",
         },
         Object {
-          "atomicCss": ".acj_1fc2cvb_yjd7ki .foo.a{display:flex}",
-          "className": "acj_1fc2cvb_yjd7ki",
+          "atomicCss": ".acj_ar4wx1_yjd7ki .foo.a{display:flex}",
+          "className": "acj_ar4wx1_yjd7ki",
         },
         Object {
-          "atomicCss": ".acj_1hxrs9k_yisw1n.bar{color:blue}",
-          "className": "acj_1hxrs9k_yisw1n",
+          "atomicCss": ".acj_wb3rc2_375bw6 .foo.a{color:red}",
+          "className": "acj_wb3rc2_375bw6",
         },
       ],
       "globalRules": Array [],
@@ -89,16 +91,16 @@ test('nested media queries and @supports', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": "@supports (display: grid){@media (max-width: 425px){.acj_13vway9_375xa8 .test{grid-template-columns:1fr}}}",
-          "className": "acj_13vway9_375xa8",
+          "atomicCss": "@supports (display: grid){.acj_1ra1r88_yirxwd{display:grid}}",
+          "className": "acj_1ra1r88_yirxwd",
         },
         Object {
-          "atomicCss": "@supports (display: grid){.acj_3in6je_yirxwd{display:grid}}",
-          "className": "acj_3in6je_yirxwd",
+          "atomicCss": "@supports (display: grid){.acj_4sfctr_1201c14{grid-template-columns:repeat(2, 1fr)}}",
+          "className": "acj_4sfctr_1201c14",
         },
         Object {
-          "atomicCss": "@supports (display: grid){.acj_tt93ot_1201c14{grid-template-columns:repeat(2, 1fr)}}",
-          "className": "acj_tt93ot_1201c14",
+          "atomicCss": "@supports (display: grid){@media (max-width: 425px){.acj_z4fr5f_375xa8 .test{grid-template-columns:1fr}}}",
+          "className": "acj_z4fr5f_375xa8",
         },
       ],
       "globalRules": Array [],
@@ -137,8 +139,8 @@ it('removes duplicate rules', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": ".acj_3yu9gv_yisw1n .foo{color:blue}",
-          "className": "acj_3yu9gv_yisw1n",
+          "atomicCss": ".acj_131kqy5_yisw1n .foo{color:blue}",
+          "className": "acj_131kqy5_yisw1n",
         },
       ],
       "globalRules": Array [],
@@ -228,8 +230,8 @@ test('@keyframes with @supports (--atomic-css-in-js: global)', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": ".acj_z66snb_375bw6{color:red}",
-          "className": "acj_z66snb_375bw6",
+          "atomicCss": ".acj_1m4qrlx_375bw6{color:red}",
+          "className": "acj_1m4qrlx_375bw6",
         },
       ],
       "globalRules": Array [
@@ -238,4 +240,35 @@ test('@keyframes with @supports (--atomic-css-in-js: global)', () => {
       ],
     }
   `);
+});
+
+it('allows for fallback css values with comments', () => {
+  const result = compile(css`
+    /* fallback */
+    color: red;
+    color: var(--my-var);
+  `);
+
+  expect(result).toMatchInlineSnapshot(`
+    Object {
+      "atomicRules": Array [
+        Object {
+          "atomicCss": ".acj_1m4qrlx_1li620t{color:var(--my-var)}",
+          "className": "acj_1m4qrlx_1li620t",
+        },
+        Object {
+          "atomicCss": ".acj_hfmt3i_375bw6{color:red}",
+          "className": "acj_hfmt3i_375bw6",
+        },
+      ],
+      "globalRules": Array [],
+    }
+  `);
+
+  const className = resolve(getClassName(result));
+  // if there was no falback, there would only be one
+  expect(className.split(' ').length).toBe(2);
+  expect(className).toMatchInlineSnapshot(
+    `"acj_1m4qrlx_1li620t acj_hfmt3i_375bw6"`
+  );
 });

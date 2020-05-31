@@ -41,7 +41,7 @@ it('takes in multiple style atomic class names and returns a single resolved cla
   expect(resolved.split(' ').length).toBe(2);
 
   expect(resolved).toMatchInlineSnapshot(
-    `"acj_1nu230k_yirzs0 acj_z66snb_yisw1n"`
+    `"acj_17tsx6u_yirzs0 acj_1m4qrlx_yisw1n"`
   );
 });
 
@@ -110,6 +110,6 @@ it('appends non-match (e.g. non atomic) class names to the end of the string', (
   const resolved = resolve('non-atomic-classname', red, bold);
   expect(resolved.split(' ').length).toBe(3);
   expect(resolved).toMatchInlineSnapshot(
-    `"acj_z66snb_375bw6 acj_1nu230k_yirzs0 non-atomic-classname"`
+    `"acj_1m4qrlx_375bw6 acj_17tsx6u_yirzs0 non-atomic-classname"`
   );
 });

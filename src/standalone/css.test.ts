@@ -21,13 +21,13 @@ it('creates a class name', () => {
   `;
 
   expect(className).toMatchInlineSnapshot(
-    `"acj_11x6v6c_1jxplcz acj_z66snb_32wtia"`
+    `"acj_10x192_1jxplcz acj_1m4qrlx_32wtia"`
   );
 
   expect(appliedAtomicCssRules).toMatchInlineSnapshot(`
     Object {
-      ".acj_11x6v6c_1jxplcz:hover{text-decoration:underline}": true,
-      ".acj_z66snb_32wtia{color:black}": true,
+      ".acj_10x192_1jxplcz:hover{text-decoration:underline}": true,
+      ".acj_1m4qrlx_32wtia{color:black}": true,
     }
   `);
 });

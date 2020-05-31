@@ -12,6 +12,7 @@ interface StylisNode {
   children: string | StylisNode[];
   line: number;
   column: number;
+  parent: StylisNode | null;
 }
 
 /**
@@ -23,6 +24,7 @@ interface StyleAtom {
   className: string;
   property: string;
   value: string;
+  isFallback: boolean;
 }
 
 // https://github.com/darkskyapp/string-hash/blob/master/index.js
@@ -60,6 +62,7 @@ function emptyAtom() {
     property: '',
     className: '',
     value: '',
+    isFallback: false,
   };
 
   return atom;
@@ -121,11 +124,22 @@ function compile(stylisCss: string): CompilationResult {
         if (Array.isArray(children)) throw new Error('should not be array');
         if (Array.isArray(props)) throw new Error('should not be array');
 
+        const parentChildren = node.parent?.children as
+          | StylisNode[]
+          | undefined;
+        const selfIndex = parentChildren?.indexOf(node);
+        const previousNode =
+          parentChildren && parentChildren[(selfIndex || 0) - 1];
+        const isFallback =
+          typeof previousNode?.children === 'string' &&
+          previousNode?.children.toLowerCase().trim() === 'fallback';
+
         atoms.push({
           media: [...current.media],
           className: current.className,
           property: props,
           value: children,
+          isFallback,
         });
         return;
       }
@@ -196,11 +210,13 @@ function compile(stylisCss: string): CompilationResult {
   }
 
   const atomicRules = atoms.map(
-    ({ media, className: _className, property, value }) => {
+    ({ media, className: _className, property, value, isFallback }) => {
       const className = _className.replace(root, '');
       // hash the rule path so that this hash can be used to see if there are
       // collision in applied rules.
-      const ruleHash = hash([...media, className, property].join('_'));
+      const ruleHash = hash(
+        [...media, className, property, isFallback].join('_')
+      );
       const valueHash = hash(value);
       // the rule hash might start with a number (which is not a valid CSS class
       // name) so we prefix with `acj-`.
