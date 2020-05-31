@@ -4,15 +4,6 @@ roadmap/features
 
 `atomic-css-in-js` is not the first library of its kind. There many other amazing libraries that do either statically extracted CSS-in-JS or atomic CSS-in-JS but none that checked all the boxes for me.
 
-|                              | statically extracted | deduped chunks | atomic css | css string style | runtime option |
-| ---------------------------- | -------------------- | -------------- | ---------- | ---------------- | -------------- |
-| [`linaria`][linaira]         | ✅                   | 🔴             | 🔴         | ✅               | 🔴             |
-| [`otion`][otion]             | 🔴                   | 🔴             | ✅         | 🔴               | ✅             |
-| [`style-sheet`][style-sheet] | ✅                   | 🔴             | ✅         | 🔴               | ✅             |
-| [`css-zero`][css-zero]       | ✅                   | 🔴             | ✅         | ✅               |                |
-
-[otion]:
-
 - [ ] standalone mode
 - [ ] compiler mode (static CSS extraction)
 - [ ] loader (reduce code splitting reduction)
