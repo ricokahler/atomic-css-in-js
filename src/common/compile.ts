@@ -138,6 +138,25 @@ function compile(stylisCss: string): CompilationResult {
       case '@supports': {
         if (typeof children === 'string') throw new Error('expected array');
 
+        // implements `@supports (--acj: global) {}
+        const propsArr = Array.isArray(props) ? props : [props];
+        if (
+          propsArr.some((prop) =>
+            prop.match(/^\(--atomic-css-in-js:.*global\)$/)
+          )
+        ) {
+          for (const globalRule of children) {
+            const serializedRule = serialize([globalRule], stringify)
+              .replace(root, '')
+              .trim();
+
+            if (serializedRule) {
+              otherRules.push(serializedRule);
+            }
+          }
+          return;
+        }
+
         for (const child of children) {
           // change
           current.media.push(value);
@@ -146,7 +165,7 @@ function compile(stylisCss: string): CompilationResult {
           // undo
           const index = current.media.indexOf(value);
           if (index === -1) {
-            throw new Error('Not supposed to happend');
+            throw new Error('Not supposed to happen');
           }
           current.media.splice(index, 1);
         }

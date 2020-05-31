@@ -89,8 +89,8 @@ test('nested media queries and @supports', () => {
     Object {
       "atomicRules": Array [
         Object {
-          "atomicCss": "@supports (display: grid){@media (max-width: 425px){.acj_1bcbv0p_375xa8{grid-template-columns:1fr}}}",
-          "className": "acj_1bcbv0p_375xa8",
+          "atomicCss": "@supports (display: grid){@media (max-width: 425px){.acj_13vway9_375xa8 .test{grid-template-columns:1fr}}}",
+          "className": "acj_13vway9_375xa8",
         },
         Object {
           "atomicCss": "@supports (display: grid){.acj_3in6je_yirxwd{display:grid}}",
@@ -191,6 +191,48 @@ test('@keyframes', () => {
       "otherRules": Array [
         "@keyframes mymove{from{top:0px;}to{top:200px;}}",
         "@keyframes mymove{0%{top:0px;}25%{top:200px;}50%{top:100px;}75%{top:200px;}100%{top:0px;}}",
+      ],
+    }
+  `);
+});
+
+it('allows for global css with the `@supports (--atomic-css-in-js: global)` rule', () => {
+  const result = compile(css`
+    @supports (--atomic-css-in-js: global) {
+      .red {
+        color: red;
+        background-color: red;
+      }
+
+      .black {
+        color: black;
+      }
+
+      .bold {
+        font-weight: bold;
+
+        .nested {
+          background-color: purple;
+        }
+      }
+
+      @media (max-width: 425px) {
+        .test {
+          font-weight: 900;
+        }
+      }
+    }
+  `);
+
+  expect(result).toMatchInlineSnapshot(`
+    Object {
+      "atomicRules": Array [],
+      "otherRules": Array [
+        ".red{color:red;background-color:red;}",
+        ".black{color:black;}",
+        ".bold{font-weight:bold;}",
+        ".bold .nested{background-color:purple;}",
+        "@media (max-width: 425px){ .test{font-weight:900;}}",
       ],
     }
   `);
