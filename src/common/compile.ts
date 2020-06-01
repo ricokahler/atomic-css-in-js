@@ -74,8 +74,8 @@ export interface AtomicRule {
 }
 
 export interface CompilationResult {
-  atomicRules: AtomicRule[];
-  globalRules: string[];
+  atomicRules: { [className: string]: string };
+  globalRules: { [key: string]: true };
 }
 
 /**
@@ -86,7 +86,7 @@ function compile(stylisCss: string): CompilationResult {
   const ast = stylisCompile(`${root} {${stylisCss}}`);
 
   const atoms: StyleAtom[] = [];
-  const otherRules: string[] = [];
+  const globalRules: CompilationResult['globalRules'] = {};
 
   /**
    * Traverses the AST mutating current to find all the style "atoms" — where
@@ -165,7 +165,7 @@ function compile(stylisCss: string): CompilationResult {
               .trim();
 
             if (serializedRule) {
-              otherRules.push(serializedRule);
+              globalRules[serializedRule] = true;
             }
           }
           return;
@@ -209,8 +209,8 @@ function compile(stylisCss: string): CompilationResult {
     traverse(node, emptyAtom());
   }
 
-  const atomicRules = atoms.map(
-    ({ media, className: _className, property, value, isFallback }) => {
+  const atomicRules = atoms
+    .map(({ media, className: _className, property, value, isFallback }) => {
       const className = _className.replace(root, '');
       // hash the rule path so that this hash can be used to see if there are
       // collision in applied rules.
@@ -224,20 +224,16 @@ function compile(stylisCss: string): CompilationResult {
       const finalClassName = `acj_${ruleHash}_${valueHash}`;
       const ruleNoMedia = `.${finalClassName}${className}{${property}:${value}}`;
       const atomicCss = applyMedia(media, ruleNoMedia);
-      return { className: finalClassName, atomicCss };
-    }
-  );
-
-  const uniqueAtomicRules = Object.values(
-    atomicRules.reduce((acc, next) => {
-      acc[next.atomicCss] = next;
+      return [finalClassName, atomicCss];
+    })
+    .reduce((acc, [finalClassName, atomicCss]) => {
+      acc[finalClassName] = atomicCss;
       return acc;
-    }, {} as { [atomicCss: string]: { className: string; atomicCss: string } })
-  ).sort((a, b) => a.className.localeCompare(b.className));
+    }, {} as CompilationResult['atomicRules']);
 
   return {
-    atomicRules: uniqueAtomicRules,
-    globalRules: otherRules,
+    atomicRules,
+    globalRules,
   };
 }
 
