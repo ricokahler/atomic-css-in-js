@@ -16,44 +16,30 @@ it('works', async () => {
 
   const result = transform((await fs.promises.readFile(filePath)).toString(), {
     babelrc: false,
+    configFile: false,
     filename: filePath,
     presets: ['@babel/preset-react'],
     plugins: [[plugin, pluginOptions]],
   });
 
   expect(result.code).toMatchInlineSnapshot(`
-    "\\"use strict\\";
-
-    Object.defineProperty(exports, \\"__esModule\\", {
-      value: true
-    });
-    exports.default = exports.styles = void 0;
-
-    require(\\"atomic-css-in-js/load.atomic-css-in-js?css=LmFjal8xbTRxcmx4XzJxcGE5dXtjb2xvcjp3aGl0ZX0%3D\\");
-
-    require(\\"atomic-css-in-js/load.atomic-css-in-js?css=LmFjal8xdXg5Z3B5X3lpc3cxbntiYWNrZ3JvdW5kLWNvbG9yOmJsdWV9\\");
-
-    var _react = _interopRequireDefault(require(\\"react\\"));
-
-    var _atomicCssInJs = require(\\"atomic-css-in-js\\");
-
-    function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-    const styles = (0, _atomicCssInJs.createStyles)({
-      main: (0, _atomicCssInJs.css)\`
+    "import \\"atomic-css-in-js/load.atomic-css-in-js?css=LmFjal8xbTRxcmx4XzJxcGE5dXtjb2xvcjp3aGl0ZX0%3D\\";
+    import \\"atomic-css-in-js/load.atomic-css-in-js?css=LmFjal8xdXg5Z3B5X3lpc3cxbntiYWNrZ3JvdW5kLWNvbG9yOmJsdWV9\\";
+    import React from 'react';
+    import { createStyles, css } from 'atomic-css-in-js';
+    export const styles = createStyles({
+      main: css\`
         background-color: blue;
         color: white;
       \`
     });
-    exports.styles = styles;
 
     function MyComponent() {
-      return /*#__PURE__*/_react.default.createElement(\\"div\\", {
+      return /*#__PURE__*/React.createElement(\\"div\\", {
         className: styles.main
       }, \\"Test\\");
     }
 
-    var _default = MyComponent;
-    exports.default = _default;"
+    export default MyComponent;"
   `);
 });

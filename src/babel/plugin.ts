@@ -53,11 +53,15 @@ function collect(filename: string, opts: Options) {
     filename,
     presets: [
       ['@babel/preset-env', { targets: { node: 'current' } }],
+      // TODO: probably shouldn't need these
       flow ? ['@babel/preset-flow'] : ['@babel/preset-typescript'],
       ['@babel/preset-react'],
     ],
     plugins: [
+      // TODO: can we rely on a parent configuration?
       '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-optional-chaining',
+      '@babel/plugin-proposal-nullish-coalescing-operator',
       [
         'module-resolver',
         {
@@ -73,20 +77,15 @@ function collect(filename: string, opts: Options) {
         },
       ],
     ],
-    babelrc: false,
+    // TODO: does this do anything?
+    rootMode: 'upward-optional',
     ...opts.babelOptions,
   });
 
   const revert = addHook(
     (code: string, filename: string) => {
       const result = babel.transform(code, babelConfig(filename));
-
-      if (!result?.code) {
-        // TODO: better error message
-        throw new Error('No transform');
-      }
-
-      return result.code;
+      return result?.code || '';
     },
     { exts: extensions }
   );
@@ -119,27 +118,22 @@ function collect(filename: string, opts: Options) {
       'Failed to execute file'
     );
 
-    const reduceCompilationResult = (
-      acc: CompilationResult,
-      next: CompilationResult
-    ) => {
-      for (const [key, value] of Object.entries(next.atomicRules)) {
-        acc.atomicRules[key] = value;
-      }
-      for (const key of Object.keys(next.globalRules)) {
-        acc.globalRules[key] = true;
-      }
-
-      return acc;
-    };
-
     const combinedCompilations = attempt(
       () =>
         stylesToPull.reduce(
           (acc, styleObj) => {
             return Object.values(styleObj)
               .map(compile)
-              .reduce(reduceCompilationResult, acc);
+              .reduce((acc, next) => {
+                for (const [key, value] of Object.entries(next.atomicRules)) {
+                  acc.atomicRules[key] = value;
+                }
+                for (const key of Object.keys(next.globalRules)) {
+                  acc.globalRules[key] = true;
+                }
+
+                return acc;
+              }, acc);
           },
           {
             atomicRules: {},
@@ -150,8 +144,6 @@ function collect(filename: string, opts: Options) {
     );
 
     return combinedCompilations;
-  } catch (e) {
-    throw e;
   } finally {
     revert();
   }

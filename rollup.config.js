@@ -79,7 +79,7 @@ export default [
   {
     input: './src/load.ts',
     output: {
-      file: './dist/load.js',
+      file: './dist/load.atomic-css-in-js',
       format: 'esm',
     },
     plugins: esmPlugins,
