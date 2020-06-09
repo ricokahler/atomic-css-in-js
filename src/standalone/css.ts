@@ -32,19 +32,20 @@ function css(strings: TemplateStringsArray, ...values: Array<string | number>) {
   const styleEl = getStyleEl();
 
   const atomicRulesToApply =
-    atomicRules
-      .map(({ atomicCss }) => atomicCss)
+    Object.keys(atomicRules)
       .filter((atomicCss) => !appliedAtomicCssRules[atomicCss])
       .join('\n') + '\n';
   const globalRulesToApply =
-    globalRules.filter((rule) => !appliedGlobalRules[rule]).join('\n') + '\n';
+    Object.keys(globalRules)
+      .filter((rule) => !appliedGlobalRules[rule])
+      .join('\n') + '\n';
 
   styleEl.innerHTML += atomicRulesToApply + globalRulesToApply;
 
-  for (const { atomicCss } of atomicRules) {
+  for (const atomicCss of Object.values(atomicRules)) {
     appliedAtomicCssRules[atomicCss] = true;
   }
-  for (const otherRule of globalRules) {
+  for (const otherRule of Object.keys(globalRules)) {
     appliedGlobalRules[otherRule] = true;
   }
 

@@ -23,17 +23,11 @@ it('takes in a stylis CSS string and outputs atomic CSS', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_1m4qrlx_yisw1n{color:blue}",
-          "className": "acj_1m4qrlx_yisw1n",
-        },
-        Object {
-          "atomicCss": ".acj_1ux9gpy_32wtia{background-color:black}",
-          "className": "acj_1ux9gpy_32wtia",
-        },
-      ],
-      "globalRules": Array [],
+      "atomicRules": Object {
+        "acj_1m4qrlx_yisw1n": ".acj_1m4qrlx_yisw1n{color:blue}",
+        "acj_1ux9gpy_32wtia": ".acj_1ux9gpy_32wtia{background-color:black}",
+      },
+      "globalRules": Object {},
     }
   `);
 });
@@ -54,21 +48,12 @@ test('nested rules', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_1trhafu_yisw1n.bar{color:blue}",
-          "className": "acj_1trhafu_yisw1n",
-        },
-        Object {
-          "atomicCss": ".acj_ar4wx1_yjd7ki .foo.a{display:flex}",
-          "className": "acj_ar4wx1_yjd7ki",
-        },
-        Object {
-          "atomicCss": ".acj_wb3rc2_375bw6 .foo.a{color:red}",
-          "className": "acj_wb3rc2_375bw6",
-        },
-      ],
-      "globalRules": Array [],
+      "atomicRules": Object {
+        "acj_1trhafu_yisw1n": ".acj_1trhafu_yisw1n.bar{color:blue}",
+        "acj_ar4wx1_yjd7ki": ".acj_ar4wx1_yjd7ki .foo.a{display:flex}",
+        "acj_wb3rc2_375bw6": ".acj_wb3rc2_375bw6 .foo.a{color:red}",
+      },
+      "globalRules": Object {},
     }
   `);
 });
@@ -89,21 +74,12 @@ test('nested media queries and @supports', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": "@supports (display: grid){.acj_1ra1r88_yirxwd{display:grid}}",
-          "className": "acj_1ra1r88_yirxwd",
-        },
-        Object {
-          "atomicCss": "@supports (display: grid){.acj_4sfctr_1201c14{grid-template-columns:repeat(2, 1fr)}}",
-          "className": "acj_4sfctr_1201c14",
-        },
-        Object {
-          "atomicCss": "@supports (display: grid){@media (max-width: 425px){.acj_z4fr5f_375xa8 .test{grid-template-columns:1fr}}}",
-          "className": "acj_z4fr5f_375xa8",
-        },
-      ],
-      "globalRules": Array [],
+      "atomicRules": Object {
+        "acj_1ra1r88_yirxwd": "@supports (display: grid){.acj_1ra1r88_yirxwd{display:grid}}",
+        "acj_4sfctr_1201c14": "@supports (display: grid){.acj_4sfctr_1201c14{grid-template-columns:repeat(2, 1fr)}}",
+        "acj_z4fr5f_375xa8": "@supports (display: grid){@media (max-width: 425px){.acj_z4fr5f_375xa8 .test{grid-template-columns:1fr}}}",
+      },
+      "globalRules": Object {},
     }
   `);
 });
@@ -137,13 +113,10 @@ it('removes duplicate rules', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_131kqy5_yisw1n .foo{color:blue}",
-          "className": "acj_131kqy5_yisw1n",
-        },
-      ],
-      "globalRules": Array [],
+      "atomicRules": Object {
+        "acj_131kqy5_yisw1n": ".acj_131kqy5_yisw1n .foo{color:blue}",
+      },
+      "globalRules": Object {},
     }
   `);
 });
@@ -178,14 +151,14 @@ it('allows for global css with the `@supports (--atomic-css-in-js: global)` rule
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [],
-      "globalRules": Array [
-        ".red{color:red;background-color:red;}",
-        ".black{color:black;}",
-        ".bold{font-weight:bold;}",
-        ".bold .nested{background-color:purple;}",
-        "@media (max-width: 425px){ .test{font-weight:900;}}",
-      ],
+      "atomicRules": Object {},
+      "globalRules": Object {
+        ".black{color:black;}": true,
+        ".bold .nested{background-color:purple;}": true,
+        ".bold{font-weight:bold;}": true,
+        ".red{color:red;background-color:red;}": true,
+        "@media (max-width: 425px){ .test{font-weight:900;}}": true,
+      },
     }
   `);
 });
@@ -228,16 +201,13 @@ test('@keyframes with @supports (--atomic-css-in-js: global)', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_1m4qrlx_375bw6{color:red}",
-          "className": "acj_1m4qrlx_375bw6",
-        },
-      ],
-      "globalRules": Array [
-        "@keyframes mymove{from{top:0px;}to{top:200px;}}",
-        "@keyframes mymove{0%{top:0px;}25%{top:200px;}50%{top:100px;}75%{top:200px;}100%{top:0px;}}",
-      ],
+      "atomicRules": Object {
+        "acj_1m4qrlx_375bw6": ".acj_1m4qrlx_375bw6{color:red}",
+      },
+      "globalRules": Object {
+        "@keyframes mymove{0%{top:0px;}25%{top:200px;}50%{top:100px;}75%{top:200px;}100%{top:0px;}}": true,
+        "@keyframes mymove{from{top:0px;}to{top:200px;}}": true,
+      },
     }
   `);
 });
@@ -251,17 +221,11 @@ it('allows for fallback css values with comments', () => {
 
   expect(result).toMatchInlineSnapshot(`
     Object {
-      "atomicRules": Array [
-        Object {
-          "atomicCss": ".acj_1m4qrlx_1li620t{color:var(--my-var)}",
-          "className": "acj_1m4qrlx_1li620t",
-        },
-        Object {
-          "atomicCss": ".acj_hfmt3i_375bw6{color:red}",
-          "className": "acj_hfmt3i_375bw6",
-        },
-      ],
-      "globalRules": Array [],
+      "atomicRules": Object {
+        "acj_1m4qrlx_1li620t": ".acj_1m4qrlx_1li620t{color:var(--my-var)}",
+        "acj_hfmt3i_375bw6": ".acj_hfmt3i_375bw6{color:red}",
+      },
+      "globalRules": Object {},
     }
   `);
 

@@ -1,14 +1,10 @@
 // rollup.config.js
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
-import alias from '@rollup/plugin-alias';
-import path from 'path';
-
-// import { get } from 'lodash';
 
 const extensions = ['.js', '.ts', '.tsx'];
 
-const umdPlugins = [
+const umdCjsPlugins = [
   resolve({
     extensions,
   }),
@@ -21,14 +17,6 @@ const umdPlugins = [
 ];
 
 const esmPlugins = [
-  alias({
-    entries: [
-      {
-        find: '@atomic-css-in-js/common',
-        replacement: path.resolve(__dirname, './packages/common/src/index.ts'),
-      },
-    ],
-  }),
   resolve({
     extensions,
     modulesOnly: true,
@@ -53,7 +41,7 @@ export default [
       name: 'atomicCssInJs',
       globals: { stylis: 'stylis' },
     },
-    plugins: umdPlugins,
+    plugins: umdCjsPlugins,
     external: ['stylis'],
   },
   {
@@ -65,5 +53,44 @@ export default [
     },
     plugins: esmPlugins,
     external: ['stylis'],
+  },
+  // ssr
+  {
+    input: './src/ssr.ts',
+    output: {
+      file: './dist/ssr.js',
+      format: 'esm',
+      sourcemap: true,
+    },
+    plugins: esmPlugins,
+  },
+  // babel plugin
+  {
+    input: './src/babel/index.ts',
+    output: {
+      file: './dist/babel.js',
+      format: 'cjs',
+      sourcemap: true,
+    },
+    plugins: umdCjsPlugins,
+    external: ['pirates', 'require-from-string', 'fs', 'stylis', /^@babel\/.*/],
+  },
+  // load
+  {
+    input: './src/load.ts',
+    output: {
+      file: './dist/load.atomic-css-in-js',
+      format: 'esm',
+    },
+    plugins: esmPlugins,
+  },
+  // loader
+  {
+    input: './src/loader.ts',
+    output: {
+      file: './dist/loader.js',
+      format: 'cjs',
+    },
+    plugins: umdCjsPlugins,
   },
 ];

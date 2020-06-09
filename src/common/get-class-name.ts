@@ -1,12 +1,9 @@
-import { CompilationResult } from './compile';
+import type { CompilationResult } from './compile';
 
 function getClassName({ atomicRules, globalRules }: CompilationResult) {
   const ascendingComparator = (a: string, b: string) => a.localeCompare(b);
-  const atomicClassNames = atomicRules
-    .slice()
-    .map(({ className }) => className)
-    .sort(ascendingComparator);
-  const otherClassNames = globalRules.slice().sort(ascendingComparator);
+  const atomicClassNames = Object.keys(atomicRules).sort(ascendingComparator);
+  const otherClassNames = Object.keys(globalRules).sort(ascendingComparator);
 
   return `${atomicClassNames.join(' ')} ${otherClassNames.join(' ')}`.trim();
 }

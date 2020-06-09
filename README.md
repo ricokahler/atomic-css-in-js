@@ -24,7 +24,10 @@ const vars = createVariables('namespace', ['test']);
 const classes = createClassNames('namespace', ['test']);
 
 export const styles = createStyles({
-  main: css``,
+  main: css`
+    color: blue;
+    background-color: red;
+  `,
   title: css`
     & ${classes.test}:hover {
       background-color: ${vars.test};
@@ -101,4 +104,36 @@ property hash is to remove collisions
 ```
 
 ```css
+```
+
+TODO: document the difference between babel.config.json and .babelrc?
+
+INPUT:
+
+```js
+const styles = {
+  root: css`
+    color: blue;
+    background-color: red;
+  `,
+};
+```
+
+OUTPUT:
+
+```js
+import 'atomic-css-in-js/loader.atomic-css-in-js?css=.{classname-color-blue: blue}';
+import 'atomic-css-in-js/loader.atomic-css-in-js?css=.{classname-bg-red: red}';
+
+const styles = {
+  root: 'classname-color-blue classname-bg-red',
+}
+
+```
+
+
+CODE-SPLIT FILE:
+
+```js
+
 ```

@@ -1,21 +1,54 @@
 {
   "name": "atomic-css-in-js",
   "version": "0.0.0",
+  "private": true,
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ricokahler/atomic-css-in-js.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rico Kahler",
+    "email": "ricokahler@me.com",
+    "url": "https://github.com/ricokahler"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.js",
+    "lint": "eslint src --ext .ts,.tsx,.js",
+    "test": "jest",
+    "build-test-website": "cd ./example-site && webpack"
+  },
   "dependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.10.1",
+    "@babel/polyfill": "^7.10.1",
+    "@babel/preset-flow": "^7.10.1",
+    "@babel/traverse": "^7.10.1",
+    "@babel/types": "^7.10.2",
+    "@types/require-from-string": "^1.2.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "no-op": "^1.0.3",
+    "require-from-string": "^2.0.2",
     "stylis": "^4.0.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
+    "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
-    "@rollup/plugin-alias": "^3.1.0",
     "@rollup/plugin-babel": "^5.0.2",
     "@rollup/plugin-node-resolve": "^8.0.0",
+    "@types/common-tags": "^1.8.0",
     "@types/jest": "^25.2.3",
+    "@types/webpack": "^4.41.16",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "common-tags": "^1.8.0",
+    "css-loader": "^3.5.3",
     "eslint": "^6.8.0",
     "eslint-config-react-app": "^5.2.1",
     "eslint-plugin-flowtype": "^4.7.0",
@@ -23,28 +56,17 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^2.5.1",
+    "html-webpack-plugin": "^4.3.0",
     "jest": "^26.0.1",
-    "linaria": "^1.3.3",
+    "mini-css-extract-plugin": "^0.9.0",
     "object-hash": "^2.0.3",
     "prettier": "^2.0.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "rollup": "^2.11.2",
     "typescript": "^3.9.3",
-    "uid": "^1.0.0"
-  },
-  "scripts": {
-    "test": "jest",
-    "build": "node ./scripts/build.js",
-    "lint": "eslint src --ext .ts,.tsx,.js"
-  },
-  "author": {
-    "email": "ricokahler@me.com",
-    "name": "Rico Kahler",
-    "url": "https://github.com/ricokahler"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ricokahler/atomic-css-in-js.git"
-  },
-  "license": "MIT",
-  "private": true
+    "uid": "^1.0.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
 }
