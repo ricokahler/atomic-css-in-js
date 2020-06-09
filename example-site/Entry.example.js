@@ -25,3 +25,4 @@ function Entry() {
 // const container = document.createElement('div');
 
 // render(<Entry />, container);
+console.log(Entry);

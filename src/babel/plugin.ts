@@ -110,43 +110,37 @@ function collect(filename: string, opts: Options) {
       return result.code;
     }, 'Failed to transform');
 
-    const stylesToPull = attempt(
-      () =>
-        (() => {
-          const result = requireFromString(transformedCode);
-          return Object.values(result).filter(
-            (maybeFn: any) => maybeFn.__atomicCssInJsExtractable
-          ) as Array<
-            { [key: string]: string } & { __atomicCssInJsExtractable: true }
-          >;
-        })(),
-      'Failed to execute file'
-    );
+    const stylesToPull = attempt(() => {
+      const result = requireFromString(transformedCode);
+      return Object.entries(result)
+        .filter(([_, maybeFn]: any) => maybeFn.__atomicCssInJsExtractable)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value as { [classKey: string]: string } & {
+            __atomicCssInJsExtractable: true;
+          };
+          return acc;
+        }, {} as { [exportName: string]: { [classKey: string]: string } & { __atomicCssInJsExtractable: true } });
+    }, 'Failed to execute file');
 
-    const combinedCompilations = attempt(
-      () =>
-        stylesToPull.reduce(
-          (acc, styleObj) => {
-            return Object.values(styleObj)
-              .map(compile)
-              .reduce((acc, next) => {
-                for (const [key, value] of Object.entries(next.atomicRules)) {
-                  acc.atomicRules[key] = value;
-                }
-                for (const key of Object.keys(next.globalRules)) {
-                  acc.globalRules[key] = true;
-                }
+    const combinedCompilations = attempt(() => {
+      return Object.entries(stylesToPull).reduce(
+        (acc, [exportName, styleObj]) => {
+          acc[exportName] = Object.entries(styleObj).reduce(
+            (acc, [className, styleObj]) => {
+              if (className === '__atomicCssInJsExtractable') return acc;
 
-                return acc;
-              }, acc);
-          },
-          {
-            atomicRules: {},
-            globalRules: {},
-          } as CompilationResult
-        ),
-      'Failed to compile stylis-CSS'
-    );
+              acc[className] = compile(styleObj);
+              return acc;
+            },
+            {} as { [classKey: string]: CompilationResult }
+          );
+          return acc;
+        },
+        {} as {
+          [exportName: string]: { [classKey: string]: CompilationResult };
+        }
+      );
+    }, 'Failed to compile stylis-CSS');
 
     return combinedCompilations;
   } finally {
@@ -184,12 +178,57 @@ function plugin(
 
         if (!shouldProcessFile) return;
 
-        const { atomicRules, globalRules } = collect(
-          state.file.opts.filename,
-          opts
-        );
+        const combinedCompilations = collect(state.file.opts.filename, opts);
 
-        const combinedGlobalRules = Object.keys(globalRules).join('\n');
+        // remove create styles exports
+        path.node.body = path.node.body.filter((statement) => {
+          if (!t.isExportNamedDeclaration(statement)) return true;
+          const { declaration } = statement;
+          if (!t.isVariableDeclaration(declaration)) return true;
+
+          const isCreateStyles = declaration.declarations.some((d) => {
+            if (!t.isCallExpression(d.init)) return false;
+            if (!t.isIdentifier(d.init.callee)) return false;
+            return d.init.callee.name === 'createStyles';
+          });
+
+          return !isCreateStyles;
+        });
+
+        for (const [exportName, classNameObj] of Object.entries(
+          combinedCompilations
+        )) {
+          const objectProperties = Object.entries(classNameObj).map(
+            ([className, compilationResult]) => {
+              const classNameValue = Object.keys(
+                compilationResult.atomicRules
+              ).join(' ');
+
+              return t.objectProperty(
+                t.identifier(className),
+                t.stringLiteral(classNameValue)
+              );
+            }
+          );
+
+          const stylesObj = t.objectExpression(objectProperties);
+
+          path.node.body.unshift(
+            t.exportNamedDeclaration(
+              t.variableDeclaration('const', [
+                t.variableDeclarator(t.identifier(exportName), stylesObj),
+              ])
+            )
+          );
+        }
+
+        const combinedGlobalRules = Object.values(combinedCompilations)
+          .map((classNamesObj) => Object.values(classNamesObj))
+          .flat()
+          .map(({ globalRules }) => Object.keys(globalRules))
+          .flat()
+          .join('\n');
+
         if (combinedGlobalRules) {
           path.node.body.unshift(
             t.importDeclaration(
@@ -203,7 +242,12 @@ function plugin(
           );
         }
 
-        const atomicCssRules = Object.values(atomicRules);
+        const atomicCssRules = Object.values(combinedCompilations)
+          .map((x) => Object.values(x))
+          .flat()
+          .map((x) => Object.values(x.atomicRules))
+          .flat();
+
         if (atomicCssRules.length > 0) {
           for (const atomicRule of atomicCssRules) {
             // Add the import for the CSS filename
