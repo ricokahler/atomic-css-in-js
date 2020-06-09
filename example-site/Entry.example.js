@@ -1,5 +1,4 @@
 import React, { lazy, Suspense } from 'react';
-// import { render } from 'react-dom';
 import { createStyles, css } from 'atomic-css-in-js';
 import ModuleA from './ModuleA.example';
 const ModuleB = lazy(() => import('./ModuleB.example'));
@@ -22,7 +21,4 @@ function Entry() {
   );
 }
 
-// const container = document.createElement('div');
-
-// render(<Entry />, container);
-console.log(Entry);
+export default Entry;

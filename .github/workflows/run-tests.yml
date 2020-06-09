@@ -13,3 +13,4 @@ jobs:
       - run: npm i
       - run: npm run lint
       - run: npm t
+      - run: npm run build-test-website
