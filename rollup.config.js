@@ -84,4 +84,13 @@ export default [
     },
     plugins: esmPlugins,
   },
+  // loader
+  {
+    input: './src/loader.ts',
+    output: {
+      file: './dist/loader.js',
+      format: 'cjs',
+    },
+    plugins: umdCjsPlugins,
+  },
 ];

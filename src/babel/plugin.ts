@@ -30,6 +30,10 @@ export interface Options {
    * TODO: docs
    */
   extensions?: string[];
+  /**
+   *
+   */
+  ssrImport?: string;
 }
 
 function collect(filename: string, opts: Options) {
@@ -37,7 +41,8 @@ function collect(filename: string, opts: Options) {
     extensions = ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     flow = false,
     // TODO: add more default ignore packages
-    ignorePackages = ['react', 'gatsby'],
+    ignorePackages = [],
+    ssrImport = 'atomic-css-in-js/ssr',
   } = opts;
   const code = fs.readFileSync(filename).toString();
 
@@ -67,7 +72,7 @@ function collect(filename: string, opts: Options) {
         {
           ...opts.moduleResolver,
           alias: {
-            'atomic-css-in-js': 'atomic-css-in-js/ssr',
+            'atomic-css-in-js': ssrImport,
             ...ignorePackages.reduce((acc, packageName) => {
               acc[packageName] = 'no-op';
               return acc;
@@ -163,6 +168,8 @@ function plugin(
         path.traverse({
           ImportDeclaration(path) {
             if (path.node.source.value !== 'atomic-css-in-js') return;
+
+            path.node.source.value = opts.ssrImport || 'atomic-css-in-js/ssr';
 
             const importedCreateStyles = path.node.specifiers.some(
               (specifier) => {
